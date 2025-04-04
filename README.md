@@ -11,7 +11,6 @@ OpenRouter経由でGemini Flash 2.0を使用し、PDF文書のOCR処理を行う
 
 ## 動作要件
 - Python 3.8+
-- Tesseract OCR（システムにインストール必須）
 - Poppler（Windowsの場合はPATHを通す必要あり）
 
 ## インストール
