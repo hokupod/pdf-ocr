@@ -71,3 +71,6 @@ python ocr_pdf.py document.pdf --format jpeg --include-raw
 - OpenRouter APIキーは[OpenRouter公式サイト](https://openrouter.ai/)で取得
 - 処理時間はPDFのページ数と解像度に比例して増加
 - 高DPI設定時はシステムメモリを十分に確保
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
