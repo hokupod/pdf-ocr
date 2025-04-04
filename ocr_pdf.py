@@ -8,7 +8,7 @@ import io
 import argparse
 from dotenv import load_dotenv
 
-def process_pdf_with_ocr(api_key, input_pdf_path, dpi=300, format='png'):
+def process_pdf_with_ocr(api_key, input_pdf_path, dpi=300, format='png', include_raw=False):
     """
     PDFをGemini Flash 2.0 OCRで処理し、テキスト情報を抽出する
 
@@ -17,6 +17,7 @@ def process_pdf_with_ocr(api_key, input_pdf_path, dpi=300, format='png'):
         input_pdf_path (str): 入力PDFのパス
         dpi (int): PDFからイメージへの変換時のDPI（解像度）
         format (str): 変換する画像フォーマット
+        include_raw (bool): 生のAPIレスポンスを出力に含めるかどうか
     """
     # OpenAI APIクライアントの初期化（OpenRouter経由でGemini Flash 2.0にアクセス）
     client = OpenAI(
@@ -89,9 +90,10 @@ def process_pdf_with_ocr(api_key, input_pdf_path, dpi=300, format='png'):
                 # OCR結果を辞書に追加
                 page_result = {
                     "index": i+1,
-                    "text": extracted_text,
-                    "raw_response": str(ocr_response)
+                    "text": extracted_text
                 }
+                if include_raw:
+                    page_result["raw_response"] = str(ocr_response)
 
                 ocr_results["pages"].append(page_result)
 
@@ -112,6 +114,7 @@ def main():
     parser.add_argument('input_pdf', help='入力PDFファイルのパス')
     parser.add_argument('--dpi', type=int, default=300, help='PDFからイメージへの変換時のDPI（解像度）')
     parser.add_argument('--format', choices=['png', 'jpeg', 'tiff'], default='png', help='変換する画像フォーマット')
+    parser.add_argument('--include-raw', action='store_true', help='生のAPIレスポンスを出力に含める')
 
     args = parser.parse_args()
 
@@ -134,7 +137,13 @@ def main():
     json_output_path = os.path.join(output_dir, f"{base_name}_ocr.json")
 
     # OCR処理実行
-    ocr_results = process_pdf_with_ocr(api_key, args.input_pdf, args.dpi, args.format)
+    ocr_results = process_pdf_with_ocr(
+        api_key, 
+        args.input_pdf, 
+        args.dpi, 
+        args.format,
+        include_raw=args.include_raw  # 新しい引数を追加
+    )
 
     # JSON保存
     with open(json_output_path, 'w', encoding='utf-8') as f:
